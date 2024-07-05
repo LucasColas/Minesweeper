@@ -5,7 +5,7 @@ from Game.utilities import *
 pygame.init()
 
 class Game:
-    def __init__(self, cell_num=20, mines_count=20, num_flags=10):
+    def __init__(self, cell_num=20, mines_count=20, num_flags=20):
         self.screen = pygame.display.get_surface()
         self.screen_width = self.screen.get_width()
         self.screen_height = self.screen.get_height()
@@ -34,7 +34,7 @@ class Game:
                 if event.key == pygame.K_SPACE:
                     self.paused = not self.paused
                     self.top_bar.is_paused = self.paused
-                    print(self.paused)
+                    
                     if self.paused:
                         self.pause_time = pygame.time.get_ticks()
                     else:
@@ -58,6 +58,7 @@ class Game:
                             self.handle_game_over()
                         else:
                             self.top_bar.score += 1
+
                         if self.grid.check_win_condition():
                             self.handle_game_over()
                             self.top_bar.score += 1000

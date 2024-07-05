@@ -61,6 +61,13 @@ class Grid:
                         if self.cells[nx][ny].mines_around == 0:
                             self.reveal_adjacent(nx, ny)
 
+    def check_win_condition(self):
+        for row in self.cells:
+            for cell in row:
+                if not cell.is_mine and not cell.is_revealed:
+                    return False
+        return True
+
     def reveal_all_mines(self):
         for row in self.cells:
             for cell in row:

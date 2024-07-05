@@ -3,6 +3,7 @@ from Game.grid import Grid
 from Game.information_widget import TopBar
 from Game.utilities import *
 pygame.init()
+
 class Game:
     def __init__(self, cell_num=20, mines_count=20, num_flags=10):
         self.screen = pygame.display.get_surface()
@@ -10,7 +11,6 @@ class Game:
         self.screen_height = self.screen.get_height()
         self.top_bar_height = 0.20 * self.screen_height
         self.grid_height = self.screen_height - self.top_bar_height
-        
         
         self.grid_width = self.screen_width
         
@@ -23,15 +23,24 @@ class Game:
         self.paused = False
         self.game_over = False
         
+    
 
     def handle_input(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.paused = not self.paused
                     self.top_bar.is_paused = self.paused
+                    print(self.paused)
+                    if self.paused:
+                        self.pause_time = pygame.time.get_ticks()
+                    else:
+                        # Adjust timer start ticks to account for the pause duration
+                        paused_duration = pygame.time.get_ticks() - self.pause_time
+                        self.top_bar.timer_start_ticks += paused_duration
 
                 elif event.key == pygame.K_ESCAPE and self.game_over:
                     self.reset_game()
@@ -49,6 +58,10 @@ class Game:
                             self.handle_game_over()
                         else:
                             self.top_bar.score += 1
+                        if self.grid.check_win_condition():
+                            self.handle_game_over()
+                            self.top_bar.score += 1000
+
                     elif event.button == 3 and self.top_bar.num_flags:  # Right click
                         self.grid.cells[cell_x][cell_y].toggle_flag()
                         self.top_bar.num_flags -= 1
@@ -56,11 +69,24 @@ class Game:
     def update(self):
         if not self.paused and not self.game_over:
             self.top_bar.update()
+        
+    def draw_pause(self):
+        font = pygame.font.SysFont(None, 72)
+        paused_text = font.render("Paused", True, GREEN)
+        rect = paused_text.get_rect(center=(self.screen_width // 2, self.screen_height // 2))
+        self.screen.blit(paused_text, rect)
 
     def draw_game_over(self):
         font = pygame.font.SysFont(None, 72)
         game_over_text = font.render("Game Over", True, RED)
         rect = game_over_text.get_rect(center=(self.screen_width // 2, self.screen_height // 2))
+        self.screen.blit(game_over_text, rect)
+
+    
+    def draw_win(self):
+        font = pygame.font.SysFont(None, 72)
+        game_over_text = font.render("You Win", True, GREEN)
+        rect = game_over_text.get_rect(center=(self.screen_width // 2, 0))
         self.screen.blit(game_over_text, rect)
 
     def handle_game_over(self):
@@ -74,6 +100,8 @@ class Game:
         self.grid.draw(self.screen)
         if self.game_over:
             self.draw_game_over()
+        if self.paused:
+            self.draw_pause()
         pygame.display.flip()
 
     def reset_game(self):

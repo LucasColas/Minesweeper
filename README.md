@@ -22,5 +22,3 @@ Minesweeper made with Python and Pygame !
 * run `main.py`
 * Enjoy !
 
-## More explanation
-main.py is the entry point. The folder called Game contains the code of the game. The game uses a Piece call to display and rotate a piece. And there's a grid that helps to store the previous pieces and check if a line is complete of if it's the end of the game.

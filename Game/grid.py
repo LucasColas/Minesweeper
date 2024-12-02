@@ -50,16 +50,21 @@ class Grid:
         return False
 
     def reveal_adjacent(self, x, y):
-       
-        for dx in range(-1, 2):
-            for dy in range(-1, 2):
-                nx, ny = x + dx, y + dy
-                if 0 <= nx < self.cell_num and 0 <= ny < self.cell_num:
-                    if not self.cells[nx][ny].is_revealed and not self.cells[nx][ny].is_mine:
-                        self.cells[nx][ny].reveal()
-                        
-                        if self.cells[nx][ny].mines_around == 0:
-                            self.reveal_adjacent(nx, ny)
+        stack = [(x, y)] 
+        while stack:
+            cx, cy = stack.pop()
+            
+            for dx in range(-1, 2):
+                for dy in range(-1, 2):
+                    nx, ny = cx + dx, cy + dy
+                    if 0 <= nx < self.cell_num and 0 <= ny < self.cell_num:
+                        cell = self.cells[nx][ny]
+                        if not cell.is_revealed and not cell.is_mine:
+                            cell.reveal()
+
+                            if cell.mines_around == 0:
+                                stack.append((nx, ny)) 
+
 
     def check_win_condition(self):
         for row in self.cells:
